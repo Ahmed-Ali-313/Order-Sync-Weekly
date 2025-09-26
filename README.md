@@ -1,93 +1,80 @@
 ## Overview
 
-Nathan's Workflow is an automated n8n workflow designed to process weekly ERP orders, filter and transform data, store records in Airtable, calculate booking statistics, and send a summary notification to Discord. The workflow is triggered every Monday at 9 AM and integrates multiple services for seamless data flow and reporting.
+Nathan's Workflow is an automated n8n workflow that processes weekly ERP orders, filters and transforms data, stores records in Airtable, calculates booking statistics, and sends a summary notification to Discord. The workflow is triggered every Monday at 9 AM and integrates multiple services for seamless data flow and reporting.
 
----
+
 
 ## Program Structure
 
 ### Nodes
 
-1. **Schedule Trigger**
-   - **Purpose:** Initiates the workflow every week (Monday, 9 AM).
-   - **Type:** `n8n-nodes-base.scheduleTrigger`
+1. **Schedule Trigger**  
+   Initiates the workflow every week (Monday, 9 AM).
 
-2. **HTTP Request**
-   - **Purpose:** Fetches order data from a custom ERP webhook.
-   - **Authentication:** HTTP Header with a unique ID.
-   - **Type:** `n8n-nodes-base.httpRequest`
+2. **HTTP Request**  
+   Fetches order data from a custom ERP webhook using header authentication.
 
-3. **If**
-   - **Purpose:** Checks if the order status is `"processing"`.
-   - **Type:** `n8n-nodes-base.if`
+3. **If**  
+   Checks if the order status is `"processing"`.
 
-4. **Edit Fields (Set)**
-   - **Purpose:** Extracts and sets `orderID` and `employeeName` from the incoming data.
-   - **Type:** `n8n-nodes-base.set`
+4. **Edit Fields (Set)**  
+   Extracts and sets `orderID` and `employeeName` from the incoming data.
 
-5. **AirTable**
-   - **Purpose:** Creates a new record in the "orders" table of the specified Airtable base.
-   - **Fields:** `orderID`, `employeeName`, `Attachments`, `Attachment Summary`
-   - **Type:** `n8n-nodes-base.airtable`
+5. **AirTable**  
+   Creates a new record in the "orders" table of the specified Airtable base.
 
-6. **Code**
-   - **Purpose:** Calculates booking statistics:
-     - `totalBooked`: Number of booked orders.
-     - `bookedSum`: Total value of booked orders.
-   - **Type:** `n8n-nodes-base.code`
+6. **Code**  
+   Calculates booking statistics (`totalBooked`, `bookedSum`).
 
-7. **Discord**
-   - **Purpose:** Sends a summary message to Discord with booking stats and the unique ID.
-   - **Type:** `n8n-nodes-base.discord`
+7. **Discord**  
+   Sends a summary message to Discord with booking stats and the unique ID.
 
 ---
 
-## Workflow Logic
+## Workflow Diagram
 
-1. **Trigger:** The workflow starts with the Schedule Trigger node.
-2. **Fetch Data:** The HTTP Request node retrieves order data from the ERP system.
-3. **Filter:** The If node checks if the order status is `"processing"`.
-4. **Transform:** If true, the Edit Fields node extracts relevant fields.
-5. **Store:** The AirTable node creates a new record in Airtable.
-6. **Calculate:** The Code node computes booking statistics.
-7. **Notify:** The Discord node sends a summary message to a Discord channel.
+![Workflow Screenshot](./workflow-screenshot.png)
+
+*Place your screenshot image as `workflow-screenshot.png` in the same directory as this README.*
 
 ---
 
-## Connections
+## Usage Instructions
 
-- **Schedule Trigger → HTTP Request**
-- **HTTP Request → If**
-- **If → Edit Fields → AirTable**
-- **If → Code → Discord**
+### Prerequisites
 
----
+- n8n installed and running
+- Credentials for:
+  - ERP webhook (HTTP header authentication)
+  - Airtable (Personal Access Token)
+  - Discord (Webhook URL)
 
-## Credentials
+### Setup Steps
 
-- **HTTP Request:** Uses header authentication (`unique_id`).
-- **AirTable:** Uses a personal access token.
-- **Discord:** Uses a webhook account.
+1. **Import the Workflow**
+   - Download `Nathan's workflow.json`.
+   - In n8n, go to "Workflows" > "Import" and select the JSON file.
 
----
+2. **Configure Credentials**
+   - Set up HTTP Request node with your ERP webhook URL and authentication.
+   - Add your Airtable Personal Access Token in the AirTable node.
+   - Add your Discord Webhook URL in the Discord node.
 
-## Customization
+3. **Customize Fields (Optional)**
+   - Adjust field mappings in the Edit Fields and AirTable nodes as needed.
+   - Modify the Discord message content if desired.
 
-- **Schedule:** Adjust the trigger time as needed.
-- **Endpoints:** Change the ERP webhook URL or Airtable base/table.
-- **Fields:** Map additional fields in Airtable if required.
-- **Discord Message:** Customize the notification content.
+4. **Activate the Workflow**
+   - Enable the workflow in n8n.
+   - The workflow will run automatically every Monday at 9 AM.
 
----
-
-## Usage
-
-1. **Configure Credentials:** Set up authentication for HTTP Request, Airtable, and Discord nodes.
-2. **Deploy Workflow:** Activate the workflow in n8n.
-3. **Monitor:** Check Discord for weekly booking summaries and Airtable for stored records.
+5. **Monitor Results**
+   - Check Discord for weekly booking summaries.
+   - Review Airtable for stored order records.
 
 ---
 
 ## License
 
 This workflow is intended for internal automation and integration purposes.
+
